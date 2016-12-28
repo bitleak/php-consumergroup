@@ -5,7 +5,7 @@ producer及其他相关的内容可以参考[php_rdkafka](https://github.com/arn
 经过简单的压力测试，单个进程的消费能力能达到每秒钟7.8W条，压测详细内容见[压力测试](#压力测试)。
 
 ### 依赖
-[php_zookeeper](https://github.com/andreiz/php-zookeeper)
+[php_zookeeper](https://github.com/php-zookeeper/php-zookeeper)
 
 [php_rdkafka](https://github.com/arnaud-lb/php-rdkafka/releases/tag/1.0.0) （建议使用1.0.0版本）
 

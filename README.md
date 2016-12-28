@@ -10,7 +10,7 @@ php-kafka-consumer is a kafka consumer library with group and rebalance supports
 
 ## Dependencies
 
-* [php-zookeeper](https://github.com/andreiz/php-zookeeper)
+* [php-zookeeper](https://github.com/php-zookeeper/php-zookeeper)
 * [php_rdkafka](https://github.com/arnaud-lb/php-rdkafka/releases/tag/1.0.0) (1.0.0 is recommended)
 * [librdkafka](https://github.com/edenhill/librdkafka/releases/tag/0.9.1) (0.9.1 is recommended)
 
