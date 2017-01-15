@@ -1,6 +1,6 @@
-# php-kafka-consumer
+# php-consumergroup
 
-php-kafka-consumer is a kafka consumer library with group and rebalance supports.
+php-consumergroup is a kafka consumer library with group and rebalance supports.
 
 [Chinese Doc](./README.zh-CN.md)
 

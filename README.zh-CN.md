@@ -1,4 +1,4 @@
-## php-kafka-consumer
+## php-consumergroup
 ### 简介
 主要是对php_rdkafka的consumer的api进行了一层封装，增加了原程序中所没有的与zookeeper交互的功能。在此基础上实现了rebalance功能以及group功能。
 producer及其他相关的内容可以参考[php_rdkafka](https://github.com/arnaud-lb/php-rdkafka) 中的相关文档。
