@@ -1,0 +1,14 @@
+{
+  "name": "mmzp/php-consumergroup",
+  "description": "php kafka consumer",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "lzf",
+      "email": "lzf@meitu.com"
+    }
+  ],
+  "autoload" : {
+    "psr-4" : {"MtKafka\\" : "src/"}
+  }
+}
