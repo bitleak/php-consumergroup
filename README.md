@@ -26,7 +26,7 @@ more detail  [benchmark](#benchmark)
 
 ```
 <?php 
-use MtKafka\Consumer;
+use MTKafka\Consumer;
 
 function call_back_func($msg) {
     echo "$msg->payload\n";

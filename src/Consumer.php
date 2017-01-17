@@ -1,5 +1,5 @@
 <?php
-namespace MtKafka;
+namespace MTKafka;
 
 class Consumer {
     const SMALLEST = 'smallest';

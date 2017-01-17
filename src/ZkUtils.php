@@ -1,5 +1,5 @@
 <?php
-namespace MtKafka;
+namespace MTKafka;
 
 /**
  * Utils used by kafka client to communicate with zookeeper 

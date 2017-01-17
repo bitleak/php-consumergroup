@@ -17,7 +17,7 @@ producer及其他相关的内容可以参考[php_rdkafka](https://github.com/arn
 
 ```
 <?php 
-use MtKafka\Consumer;
+use MTKafka\Consumer;
 
 function call_back_func($msg) {
     echo "$msg->payload\n";

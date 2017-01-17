@@ -9,7 +9,7 @@ function sig_handler($signo) {
         case SIGQUIT:
         case SIGTERM:
         case SIGINT:
-            \MtKafka\Consumer::stop();
+            \MTKafka\Consumer::stop();
             break;
         default:
     }
@@ -29,7 +29,7 @@ $topic = "php-test";
 $groupId = "group-test-1";
 $maxMessage = 1;
 
-$consumer = New \MtKafka\Consumer($zkAddress);
+$consumer = New \MTKafka\Consumer($zkAddress);
 $consumer->setGroupId($groupId);
 $consumer->setTopic($topic);
 $consumer->setMaxMessage($maxMessage);

@@ -12,6 +12,6 @@
     "phpunit/phpunit": "5.6.*"
   },
   "autoload" : {
-    "psr-4" : {"MtKafka\\" : "src/"}
+    "psr-4" : {"MTKafka\\" : "src/"}
   }
 }

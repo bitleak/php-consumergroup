@@ -1,5 +1,5 @@
 <?php
-use MtKafka\Consumer;
+use MTKafka\Consumer;
 
 //signal processor
 function sig_handler($signo) {      

@@ -1,5 +1,5 @@
 <?php
-namespace MtKafka;
+namespace MTKafka;
 
 class ZkUtilsTest extends \PHPUnit_Framework_TestCase {
 
