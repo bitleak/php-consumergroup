@@ -1,5 +1,5 @@
 {
-  "name": "mmzp/php-consumergroup",
+  "name": "meitu/php-consumergroup",
   "description": "php kafka consumer",
   "license": "Apache-2.0",
   "authors": [
