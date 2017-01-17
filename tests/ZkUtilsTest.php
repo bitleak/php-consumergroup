@@ -1,7 +1,7 @@
 <?php
+namespace MTKafka;
 
-require "../zkUtils.php";
-class ZkUtilsTest extends PHPUnit_Framework_TestCase {
+class ZkUtilsTest extends \PHPUnit_Framework_TestCase {
 
     protected static $zk_Utils;
     const TEST_PATH_PREFIX = "/php-zkUtils";
@@ -13,7 +13,7 @@ class ZkUtilsTest extends PHPUnit_Framework_TestCase {
     const TEST_GROUPID = "test_groupid"; 
 
     public static function setUpBeforeClass() {
-        self::$zk_Utils = new zkUtils("localhost:2188");
+        self::$zk_Utils = new ZkUtils($GLOBALS['ZOOKEEPER_ADDRESS']);
     }
 
     public static function tearDownAfterClass() {
@@ -90,7 +90,7 @@ class ZkUtilsTest extends PHPUnit_Framework_TestCase {
         $offset = rand();
         $partition = 0;
 
-        $this->assertEquals(0,self::$zk_Utils->getOffset(self::TEST_TOPIC, self::TEST_GROUPID, $partition)); 
+        $this->assertEquals(-1,self::$zk_Utils->getOffset(self::TEST_TOPIC, self::TEST_GROUPID, $partition));
 
         $result = self::$zk_Utils->commitOffset(self::TEST_TOPIC, self::TEST_GROUPID, $partition, $offset);     
         $this->assertTrue($result);

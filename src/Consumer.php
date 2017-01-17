@@ -1,11 +1,9 @@
 <?php
-include "zkUtils.php";
-
-$__serverDownTimes = 0;
+namespace MTKafka;
 
 class Consumer {
-    const smallest = 'smallest';
-    const largest = 'largest';
+    const SMALLEST = 'smallest';
+    const LARGEST = 'largest';
 
     private $groupId;
     private $topic;
@@ -32,6 +30,7 @@ class Consumer {
     private $eofHandler;
     private $offsetAutoReset;
     private static $running = true;
+    private static $__serverDownTimes = 0;
 
     /**
      * constructor
@@ -40,10 +39,10 @@ class Consumer {
      * @var Int     $sessionTimeout     zookeeper session timeout
      */
     public function __construct($zkAddress, $sessionTimeout = 30000) {
-        $this->zkUtils = new zkUtils($zkAddress, $sessionTimeout);
+        $this->zkUtils = new ZkUtils($zkAddress, $sessionTimeout);
         $this->topic = null;
         $this->maxMessage = 32;
-        $this->consumerIdPrefix = getHostByName(getHostName()) . "-" . getmypid() . "-" . microtime(true);
+        $this->consumerIdPrefix = gethostbyname(gethostname()) . "-" . getmypid() . "-" . microtime(true);
         $this->consumerId = $this->consumerIdPrefix . "default";
         $this->commitInterval = 500;
         $this->watchInterval = 10000;
@@ -52,9 +51,9 @@ class Consumer {
             printf("partition: %d , err: %s \n", $msg->partition, $msg->errstr());
         };
 
-        $this->offsetAutoReset = self::smallest;
+        $this->offsetAutoReset = self::SMALLEST;
 
-        $this->conf = new Rdkafka\Conf();
+        $this->conf = new \Rdkafka\Conf();
         $this->conf->set('broker.version.fallback', '0.8.2');
         $this->conf->set('queued.max.messages.kbytes', 1024);
         $this->conf->set('topic.metadata.refresh.interval.ms', 60000);
@@ -64,7 +63,7 @@ class Consumer {
             global $__serverDownTimes; 
             $__serverDownTimes += 1;
             if ($__serverDownTimes > 256) {
-                throw new Exception ("kafka server is not available.");
+                throw new \Exception ("kafka server is not available.");
             }
         });
     }
@@ -172,10 +171,10 @@ class Consumer {
      * @var Int     $autoReset      smallest or largest, defaults to samllest
      */
     public function setOffsetAutoReset($autoReset) {
-        if ($autoReset === self::smallest || $autoReset === self::largest) {
+        if ($autoReset === self::SMALLEST || $autoReset === self::LARGEST) {
             $this->offsetAutoReset = $autoReset;
         } else {
-            throw new Exception ("invalid offset auto reset argument: you should set
+            throw new \Exception ("invalid offset auto reset argument: you should set
                 smallest or largest");
         }
     }
@@ -204,7 +203,7 @@ class Consumer {
         foreach($diff as $partition) {
             if (!$this->zkUtils->releasePartitionOwnership($this->topic, $this->groupId, 
                 $partition)) {
-                    throw new Exception ("release partition ownership failed");
+                    throw new \Exception ("release partition ownership failed");
                 } else {
                     array_splice($curr, array_search($partition, $curr), 1);
                     $this->zkUtils->commitOffset($this->topic, $this->groupId, 
@@ -221,7 +220,7 @@ class Consumer {
                     array_push($curr, $partition);
                     $offset = $this->zkUtils->getOffset($this->topic, $this->groupId, $partition);
                     if ($offset < 0) {
-                        $this->rkTopic->consumeStart($partition, $this->offsetAutoReset === self::smallest ? -2 : -1 );
+                        $this->rkTopic->consumeStart($partition, $this->offsetAutoReset === self::SMALLEST ? -2 : -1 );
                     } else {
                         $this->rkTopic->consumeStart($partition, $offset);
                     }
@@ -277,23 +276,22 @@ class Consumer {
      */
     public function start($callback_func) {
         if (empty($this->groupId) || empty($this->topic)) {
-            throw new Exception("please set groupId and topic to this consumer");
+            throw new \Exception("please set groupId and topic to this consumer");
         }
-        $this->rk = new Rdkafka\Consumer($this->conf);
+        $this->rk = new \Rdkafka\Consumer($this->conf);
         $brokerList = $this->zkUtils->getBrokerList();
         if ($brokerList == "") {
-            throw new Exception ("broker list is empty!");
+            throw new \Exception ("broker list is empty!");
         }
         $this->rk->addBrokers($brokerList);
 
-        $topicConf = new Rdkafka\TopicConf();
+        $topicConf = new \Rdkafka\TopicConf();
         $topicConf->set('auto.offset.reset', $this->offsetAutoReset);
         $this->rkTopic = $this->rk->newTopic($this->topic, $topicConf);
 
         $this->lastCommitTime = $this->getTime();
         if (!$this->zkUtils->registerConsumer($this->topic, $this->groupId, $this->consumerId)) {
-            throw new Exception("start failed");
-            exit;
+            throw new \Exception("start failed");
         }
 
         $this->lastWatchTime = 0;
@@ -309,7 +307,7 @@ class Consumer {
         foreach($this->currentPartitions as $partition) {
             if (!$this->zkUtils->releasePartitionOwnership($this->topic, $this->groupId, 
                 $partition)) {
-                    throw new Exception ("release partition ownership failed");
+                    throw new \Exception ("release partition ownership failed");
                 } else {
                     $this->rkTopic->consumeStop($partition);
                 }
@@ -326,7 +324,6 @@ class Consumer {
     }
 
     private function consume($callback_func) { 
-        global $__serverDownTimes;
         if ($this->needRebalance()) {
             $this->rebalance();
         }
@@ -353,11 +350,11 @@ class Consumer {
                     $msg->err === RD_KAFKA_RESP_ERR__TRANSPORT) {
                         call_user_func($this->errHandler, $msg);
                     } else {
-                        throw new Exception($msg->errstr());
+                        throw new \Exception($msg->errstr());
                     }
 
                 if (!($msg === null || $msg->err == RD_KAFKA_RESP_ERR__PARTITION_EOF)) {
-                    $__serverDownTimes = 0;
+                    self::$__serverDownTimes = 0;
                 }
             }
             //commit offset to zookeeper when interval time is reached

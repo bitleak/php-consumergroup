@@ -1,8 +1,10 @@
 <?php
+namespace MTKafka;
+
 /**
  * Utils used by kafka client to communicate with zookeeper 
  */
-class zkUtils {
+class ZkUtils {
     const consumer_dir = '/consumers';
     const broker_topics_dir = '/brokers/topics';
     const brokers_dir = '/brokers/ids';
@@ -19,10 +21,10 @@ class zkUtils {
     private $zookeeper;
 
     public function __construct($address, $sessionTimeout = 30000) {
-        $this->zookeeper = new Zookeeper($address, null, $sessionTimeout);
+        $this->zookeeper = new \Zookeeper($address, null, $sessionTimeout);
     }
 
-    static function filterEmpty($e) {
+    public static function filterEmpty($e) {
         return $e !=false || $e === "0" || $e === 0;
     }
 
@@ -47,7 +49,7 @@ class zkUtils {
      */
     private function makePath($path, $value = '') {
         $parts = explode('/', $path);
-        $parts = array_filter($parts, 'zkUtils::filterEmpty');
+        $parts = array_filter($parts, 'self::filterEmpty');
         $subpath = '';
         while (count($parts) > 1) {
             $subpath .= '/' . array_shift($parts);

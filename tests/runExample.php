@@ -1,6 +1,7 @@
 <?php
 
-include '../consumer.php';
+include '../src/ZkUtils.php';
+include '../src/Consumer.php';
 
 function sig_handler($signo) {
     switch ($signo) {
@@ -8,7 +9,7 @@ function sig_handler($signo) {
         case SIGQUIT:
         case SIGTERM:
         case SIGINT:
-            Consumer::stop();
+            \MTKafka\Consumer::stop();
             break;
         default:
     }
@@ -28,7 +29,7 @@ $topic = "php-test";
 $groupId = "group-test-1";
 $maxMessage = 1;
 
-$consumer = New Consumer($zkAddress);
+$consumer = New \MTKafka\Consumer($zkAddress);
 $consumer->setGroupId($groupId);
 $consumer->setTopic($topic);
 $consumer->setMaxMessage($maxMessage);

@@ -22,9 +22,11 @@ more detail  [benchmark](#benchmark)
 
 ## Example
 
+* installing this library via composer
+
 ```
 <?php 
-include 'consumer.php';
+use MTKafka\Consumer;
 
 function call_back_func($msg) {
     echo "$msg->payload\n";
@@ -37,7 +39,7 @@ function handle_error_call_back($msg) {
 $consumer = New Consumer("localhost:2181");
 $consumer->setGroupId("group-test");
 $consumer->setTopic("topic-test");
-$consumer->setOffsetAutoReset(Consumer::smallest);
+$consumer->setOffsetAutoReset(Consumer::SMALLEST);
 $consumer->setErrHandler("handle_error_call_back");
 
 try {

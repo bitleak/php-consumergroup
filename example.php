@@ -1,6 +1,5 @@
 <?php
-
-include 'consumer.php';
+use MTKafka\Consumer;
 
 //signal processor
 function sig_handler($signo) {      
@@ -42,7 +41,7 @@ $consumer->setGroupId($groupId);
 $consumer->setTopic($topic);
 $consumer->setMaxMessage($maxMessage);
 $consumer->setClientId("test");
-$consumer->setOffsetAutoReset(Consumer::smallest);
+$consumer->setOffsetAutoReset(Consumer::SMALLEST);
 $consumer->setErrHandler("handleError");
 
 //install signal processor

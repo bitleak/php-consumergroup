@@ -12,9 +12,12 @@ producer及其他相关的内容可以参考[php_rdkafka](https://github.com/arn
 [librdkafka](https://github.com/edenhill/librdkafka/releases/tag/0.9.1)（建议使用0.9.1版本）
 
 ### 使用
+
+* 通过composer引入该类库
+
 ```
 <?php 
-include 'consumer.php';
+use MTKafka\Consumer;
 
 function call_back_func($msg) {
     echo "$msg->payload\n";

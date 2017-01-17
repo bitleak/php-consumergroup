@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit>
+    <php>
+        <var name="ZOOKEEPER_ADDRESS" value="localhost:2181" />
+    </php>
+</phpunit>
