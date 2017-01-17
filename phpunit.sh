@@ -1,0 +1,1 @@
+vendor/bin/phpunit --configuration tests/phpunit.xml --colors tests

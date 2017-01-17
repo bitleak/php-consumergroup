@@ -24,7 +24,7 @@ class ZkUtils {
         $this->zookeeper = new \Zookeeper($address, null, $sessionTimeout);
     }
 
-    static function filterEmpty($e) {
+    public static function filterEmpty($e) {
         return $e !=false || $e === "0" || $e === 0;
     }
 
@@ -49,7 +49,7 @@ class ZkUtils {
      */
     private function makePath($path, $value = '') {
         $parts = explode('/', $path);
-        $parts = array_filter($parts, 'zkUtils::filterEmpty');
+        $parts = array_filter($parts, 'self::filterEmpty');
         $subpath = '';
         while (count($parts) > 1) {
             $subpath .= '/' . array_shift($parts);

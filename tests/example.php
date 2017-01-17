@@ -1,6 +1,7 @@
 <?php
 
-include 'consumer.php';
+include '../src/ZkUtils.php';
+include '../src/Consumer.php';
 
 //signal processor
 function sig_handler($signo) {      
