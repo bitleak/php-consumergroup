@@ -125,6 +125,9 @@ class ZkUtils {
         if (strlen($path) > 1 && preg_match('@/$@', $path)) {
             $path = substr($path, 0, -1);
         }
+        if (!$this->zookeeper->exists($path)) {
+            return null;
+        }
         return $this->zookeeper->getChildren($path);
     }        
 
@@ -170,7 +173,7 @@ class ZkUtils {
      */
     public function registerConsumer($topic, $groupId, $consumerId)  {
         $path = self::consumer_dir."/$groupId/ids/$consumerId";
-        return $this->setEphemeral($path, ' ');
+        return $this->setEphemeral($path, '');
     }
 
     /**

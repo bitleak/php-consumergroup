@@ -243,6 +243,9 @@ class Consumer {
 
         //trigger rebalance when partition or consumer number has changed
         $partitions = $this->zkUtils->getPartitions($this->topic);
+        if (empty($partitions)) {
+            return false;
+        }
         sort($partitions);
         if ($partitions !== $this->partitions) {
             $this->partitions = $partitions;
@@ -269,6 +272,35 @@ class Consumer {
         }
     }
 
+     /**
+     * Group name can't be used by two or more topics in different instances,
+     * while it may case partitions unconsumed. for example:
+     *
+     * Instance A register C1 group with T1 topic(2 partitions)
+     * Instance B register C1 group with T2 topic(2 partitions)
+     *
+     * T1 partition 0 would be assigned to A, partition 1 would be assigned to B
+     * but B would never consume partition while it didn't clamin the partition,
+     * the same with T2.
+     */
+    private function validateGroup($groupId, $topic) {
+        $path = ZkUtils::consumer_dir."/$groupId";
+        $config = $this->zkUtils->get($path);
+        if (empty($config)) {
+            if(!$this->zkUtils->set($path, json_encode(array('topic' => $topic)))) {
+                throw new \Exception("failed to set topic config to consumer group");
+            }
+            return;
+        }
+        $config = json_decode($config, true);
+        if (is_array($config) && count($config) > 0 && !isset($config["topic"])) {
+            throw new \Exception("consumer group was writed by someone");
+        }
+        if (is_array($config) && isset($config["topic"]) && $config["topic"] != $topic) {
+            throw new \Exception("consumer group [".$groupId."] was used by topic [".$config["topic"]."]");
+        }
+    }
+
     /**
      * start to process messages by this callback function
      *
@@ -284,6 +316,7 @@ class Consumer {
             throw new \Exception ("broker list is empty!");
         }
         $this->rk->addBrokers($brokerList);
+        $this->validateGroup($this->groupId, $this->topic);
 
         $topicConf = new \Rdkafka\TopicConf();
         $topicConf->set('auto.offset.reset', $this->offsetAutoReset);

@@ -1,6 +1,8 @@
 <?php
-use MTKafka\Consumer;
+require 'vendor/autoload.php';
 
+
+use MTKafka\Consumer;
 //signal processor
 function sig_handler($signo) {      
     switch ($signo) {
@@ -16,7 +18,7 @@ function sig_handler($signo) {
     
 //callback function for process message
 function echo_message($msg) {
-    echo "$msg->payload ", "$msg->offset\n";
+    var_dump($msg);
     usleep(200000);
     //simulate processing time
 }
