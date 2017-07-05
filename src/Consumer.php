@@ -63,7 +63,7 @@ class Consumer {
             global $__serverDownTimes; 
             $__serverDownTimes += 1;
             if ($__serverDownTimes > 256) {
-                throw new \Exception ("kafka server is not available.");
+                throw new \Exception ("broker is not available");
             }
         });
     }
@@ -174,8 +174,7 @@ class Consumer {
         if ($autoReset === self::SMALLEST || $autoReset === self::LARGEST) {
             $this->offsetAutoReset = $autoReset;
         } else {
-            throw new \Exception ("invalid offset auto reset argument: you should set
-                smallest or largest");
+            throw new \Exception ("offsetAutoReset must be smallest or largest");
         }
     }
 
@@ -203,7 +202,7 @@ class Consumer {
         foreach($diff as $partition) {
             if (!$this->zkUtils->releasePartitionOwnership($this->topic, $this->groupId, 
                 $partition)) {
-                    throw new \Exception ("release partition ownership failed");
+                    throw new \Exception ("failed to release partition ownership");
                 } else {
                     array_splice($curr, array_search($partition, $curr), 1);
                     $this->zkUtils->commitOffset($this->topic, $this->groupId, 
@@ -276,12 +275,12 @@ class Consumer {
      */
     public function start($callback_func) {
         if (empty($this->groupId) || empty($this->topic)) {
-            throw new \Exception("please set groupId and topic to this consumer");
+            throw new \Exception("groupId and topic shouldn't be empty");
         }
         $this->rk = new \Rdkafka\Consumer($this->conf);
         $brokerList = $this->zkUtils->getBrokerList();
         if ($brokerList == "") {
-            throw new \Exception ("broker list is empty!");
+            throw new \Exception ("broker list shouldn't be empty!");
         }
         $this->rk->addBrokers($brokerList);
 
@@ -291,7 +290,7 @@ class Consumer {
 
         $this->lastCommitTime = $this->getTime();
         if (!$this->zkUtils->registerConsumer($this->topic, $this->groupId, $this->consumerId)) {
-            throw new \Exception("start failed");
+            throw new \Exception("failed to register consumer");
         }
 
         $this->lastWatchTime = 0;
@@ -307,7 +306,7 @@ class Consumer {
         foreach($this->currentPartitions as $partition) {
             if (!$this->zkUtils->releasePartitionOwnership($this->topic, $this->groupId, 
                 $partition)) {
-                    throw new \Exception ("release partition ownership failed");
+                    throw new \Exception ("failed to release partition ownership");
                 } else {
                     $this->rkTopic->consumeStop($partition);
                 }
