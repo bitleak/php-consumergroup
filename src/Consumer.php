@@ -293,7 +293,7 @@ class Consumer {
         }
         $config = json_decode($config, true);
         if (is_array($config) && count($config) > 0 && !isset($config["topic"])) {
-            throw new \Exception("consumer group was writed by someone");
+            throw new \Exception("consumer group was written by someone");
         }
         if (is_array($config) && isset($config["topic"]) && $config["topic"] != $topic) {
             throw new \Exception("consumer group [".$groupId."] was used by topic [".$config["topic"]."]");
