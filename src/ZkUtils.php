@@ -5,11 +5,12 @@ namespace MTKafka;
  * Utils used by kafka client to communicate with zookeeper 
  */
 class ZkUtils {
-    const consumer_dir = '/consumers';
-    const broker_topics_dir = '/brokers/topics';
-    const brokers_dir = '/brokers/ids';
     const EPHEMERAL = 1;
     const SEQUENCE = 2;
+
+    public $consumer_dir = '/consumers';
+    public $broker_topics_dir = '/brokers/topics';
+    public $brokers_dir = '/brokers/ids';
 
     /**
      * default acl whening creating a zonde in zookeeper
@@ -20,8 +21,13 @@ class ZkUtils {
 
     private $zookeeper;
 
-    public function __construct($address, $sessionTimeout = 30000) {
+    public function __construct($address, $sessionTimeout = 30000, $chroot = '') {
         $this->zookeeper = new \Zookeeper($address, null, $sessionTimeout);
+        if (!empty($chroot)) {
+            $this->$consumer_dir = $chroot.$this->consumer_dir;
+            $this->$broker_topics_dir = $chroot.$this->broker_topics_dir;
+            $this->$brokers_dir = $chroot.$this->brokers_dir;
+        }
     }
 
     public static function filterEmpty($e) {
@@ -141,7 +147,7 @@ class ZkUtils {
      * $return true or false
      */
     public function commitOffset($topic, $groupId, $partition, $offset) {
-        $path = self::consumer_dir."/$groupId/offsets/$topic/$partition";
+        $path = $this->$consumer_dir."/$groupId/offsets/$topic/$partition";
         return $this->set($path, $offset);
     }
 
@@ -154,7 +160,7 @@ class ZkUtils {
      * $return Int offset
      */
     public function getOffset($topic, $groupId, $partition) {
-        $path = self::consumer_dir."/$groupId/offsets/$topic/$partition";
+        $path = $this->$consumer_dir."/$groupId/offsets/$topic/$partition";
         if($this->zookeeper->exists($path)) {
             return $this->zookeeper->get($path);
         } else {
@@ -172,7 +178,7 @@ class ZkUtils {
      * $return ture or false
      */
     public function registerConsumer($topic, $groupId, $consumerId)  {
-        $path = self::consumer_dir."/$groupId/ids/$consumerId";
+        $path = $this->$consumer_dir."/$groupId/ids/$consumerId";
         return $this->setEphemeral($path, '');
     }
 
@@ -185,7 +191,7 @@ class ZkUtils {
      * $return ture or false
      */
     public function deleteConsumer($topic, $groupId, $consumerId) {
-        $path = self::consumer_dir."/$groupId/ids/$consumerId";
+        $path = $this->$consumer_dir."/$groupId/ids/$consumerId";
         return $this->delete($path);
     }
 
@@ -196,7 +202,7 @@ class ZkUtils {
      * $return an array of strings about partition number
      */
     public function getPartitions($topic) {
-        $path = self::broker_topics_dir."/$topic/partitions";
+        $path = $this->$broker_topics_dir."/$topic/partitions";
         return $this->getChildren($path);
     }
 
@@ -207,7 +213,7 @@ class ZkUtils {
      * $return an array of strings about consumer name
      */
     public function getConsumers($groupId) {
-        $path = self::consumer_dir."/$groupId/ids";
+        $path = $this->$consumer_dir."/$groupId/ids";
         return $this->getChildren($path);
     }
 
@@ -221,7 +227,7 @@ class ZkUtils {
      * $return ture or false
      */
     public function registerOwner($topic, $groupId, $partition, $consumerId) {
-        $path = self::consumer_dir."/$groupId/owners/$topic/$partition";
+        $path = $this->$consumer_dir."/$groupId/owners/$topic/$partition";
         return $this->setEphemeral($path, $consumerId);
     }
 
@@ -234,7 +240,7 @@ class ZkUtils {
      * $return ture or false
      */
     public function releasePartitionOwnership($topic, $groupId, $partition) {
-        $path = self::consumer_dir."/$groupId/owners/$topic/$partition";
+        $path = $this->$consumer_dir."/$groupId/owners/$topic/$partition";
         if ($this->zookeeper->exists($path)) {
             return $this->delete($path);
         }  
@@ -247,11 +253,11 @@ class ZkUtils {
      * $return a string about broker list, elements that including ip adress and prot are splitted by ',' .
      */
     public function getBrokerList() {
-        $path = self::brokers_dir;
+        $path = $this->$brokers_dir;
         $brokers = $this->getChildren($path);
         $brokerList = "";
         foreach($brokers as $broker) {
-            $info = $this->get(self::brokers_dir."/$broker");
+            $info = $this->get($this->$brokers_dir."/$broker");
             if ($info != null && $info !=false) {
                 $json_decode = json_decode($info, true);
                 if ($brokerList !== '') {
