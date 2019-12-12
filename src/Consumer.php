@@ -37,9 +37,10 @@ class Consumer {
      *
      * @var String  $zkAdress           list of host:port values (e.g. "host1:2181,host2:2181")
      * @var Int     $sessionTimeout     zookeeper session timeout
+     * @var String  $chroot             chroot 
      */
-    public function __construct($zkAddress, $sessionTimeout = 30000) {
-        $this->zkUtils = new ZkUtils($zkAddress, $sessionTimeout);
+    public function __construct($zkAddress, $sessionTimeout = 30000, $chroot='') {
+        $this->zkUtils = new ZkUtils($zkAddress, $sessionTimeout, $chroot);
         $this->topic = null;
         $this->maxMessage = 32;
         $this->consumerIdPrefix = gethostbyname(gethostname()) . "-" . getmypid() . "-" . microtime(true);
@@ -283,7 +284,7 @@ class Consumer {
      * the same with T2.
      */
     private function validateGroup($groupId, $topic) {
-        $path = ZkUtils::consumer_dir."/$groupId";
+        $path = $this->$consumer_dir."/$groupId";
         $config = $this->zkUtils->get($path);
         if (empty($config)) {
             if(!$this->zkUtils->set($path, json_encode(array('topic' => $topic)))) {
