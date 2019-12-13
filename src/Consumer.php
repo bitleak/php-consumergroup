@@ -284,7 +284,7 @@ class Consumer {
      * the same with T2.
      */
     private function validateGroup($groupId, $topic) {
-        $path = $this->$consumer_dir."/$groupId";
+        $path = $this->consumer_dir."/$groupId";
         $config = $this->zkUtils->get($path);
         if (empty($config)) {
             if(!$this->zkUtils->set($path, json_encode(array('topic' => $topic)))) {
